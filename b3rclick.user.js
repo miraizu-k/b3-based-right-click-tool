@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           b3rClick
-// @namespace      www.dosukoi-kissa.com
+// @namespace      com.dosukoi-kissa.www
 // @description    ブラウザ三国志ベースのアプリケーションの右クリックを拡張するプログラムです。 This script is an right-click extension, browser-3gokushi based applications 
 // @include        http://*.3gokushi.jp/*
 // @include        http://*.1kibaku.jp/*
@@ -10,7 +10,7 @@
 // @maintainer     romer
 // @version        1.1.0.1
 // ==/UserScript==
-var NAMESPACE = 'www.dosukoi-kissa.com';
+var NAMESPACE = 'com.dosukoi-kissa.www';
 var crossBrowserUtility = initCrossBrowserSupport();
 
 var $ = function (id,pd) {return pd ? pd.getElementById(id) : document.getElementById(id);};
@@ -115,19 +115,23 @@ else {
 if (userName == null || (preCheckTime.getTime() + 24*60*60*1000) <= now.getTime()) {
     var interval = 0;
     var getUserName = function(){
-        GM_xmlhttpRequest({url:location.protocol + "//" + location.host+"/user/"+location.search,onload:function(res){
-            var dom = document.createElement("html");
-            dom.innerHTML = res.responseText;
-            var ret = $x('//table[contains(concat(" ",normalize-space(@class)," "), " commonTables ")]//tr[2]/td[2]',dom);
-            ret.forEach(function(self){
-                userName = self.innerHTML;
-                GM_setValue(NAMESPACE+"userName",userName);
-                GM_setValue(NAMESPACE+"preCheckTime_UserName",new Date().getTime());
-            });
-            if (userName) {
-                clearInterval(interval);
+        GM_xmlhttpRequest({
+            url:location.protocol + "//" + location.host+"/user/"+location.search,
+            method : 'GET',
+            onload : function(res){
+                var dom = document.createElement("html");
+                dom.innerHTML = res.responseText;
+                var ret = $x('//table[contains(concat(" ",normalize-space(@class)," "), " commonTables ")]//tr[2]/td[2]',dom);
+                ret.forEach(function(self){
+                    userName = self.innerHTML;
+                    GM_setValue(NAMESPACE+"userName",userName);
+                    GM_setValue(NAMESPACE+"preCheckTime_UserName",new Date().getTime());
+                });
+                if (userName) {
+                    clearInterval(interval);
+                }
             }
-        }});
+        });
     };
     setTimeout(getUserName,0);
 }
@@ -404,10 +408,14 @@ var villageMenu = {
             click : function (event) {
                 subMenu.style.display = "none";
                 mainMenu.style.display = "none"
-                GM_xmlhttpRequest({url:event.target.href});
-                GM_xmlhttpRequest({url:event.target.href,onload:function(res){
-                    location.reload();
-                }});
+                GM_xmlhttpRequest({url:event.target.href, method : 'GET'});
+                GM_xmlhttpRequest({
+                    url:event.target.href,
+                    method : 'GET',
+                    onload:function(res){
+                        location.reload();
+                    }
+                });
                 event.preventDefault();
                 return false;
             }
@@ -449,27 +457,31 @@ var villageMenu = {
     ready : function(event) {
         var baseUrl = location.protocol + "//"+location.hostname+"/";
         subMenu.setAttribute("ready","false");
-        GM_xmlhttpRequest({url:event.target.href,onload:function(respons){
-            subMenu.innerHTML = "";
-            var addWarp = document.createElement("UL");
-            subMenu.appendChild(addWarp);
-            var dom = document.createElement("html");
-            dom.innerHTML = respons.responseText;
-            $x('//table[@summary="object"]',dom).forEach(function(self){
-                var addDocWarp = document.createElement("LI");
-                var addDoc = document.createElement("A");
-                $x('.//th[contains(concat(" ",normalize-space(@class)," "), " mainTtl ")]',self).forEach(function(th){
-                    addDoc.innerHTML = th.innerHTML;
+        GM_xmlhttpRequest({
+            url:event.target.href,
+            method : 'GET',
+            onload:function(respons){
+                subMenu.innerHTML = "";
+                var addWarp = document.createElement("UL");
+                subMenu.appendChild(addWarp);
+                var dom = document.createElement("html");
+                dom.innerHTML = respons.responseText;
+                $x('//table[@summary="object"]',dom).forEach(function(self){
+                    var addDocWarp = document.createElement("LI");
+                    var addDoc = document.createElement("A");
+                    $x('.//th[contains(concat(" ",normalize-space(@class)," "), " mainTtl ")]',self).forEach(function(th){
+                        addDoc.innerHTML = th.innerHTML;
+                    });
+                    $x('.//div[contains(concat(" ",normalize-space(@class)," "), " lvupFacility ")]/p[contains(concat(" ",normalize-space(@class)," "), " main ")]/a',self).forEach(function(a){
+                        addDoc.href = baseUrl + "/facility/" + (a.getAttribute('href').replace(baseUrl,""));
+                    });
+                    $e(addDoc,'click',function(e){subMenu.style.display = "none";mainMenu.style.display = "none";});
+                    addDocWarp.appendChild(addDoc);
+                    addWarp.appendChild(addDocWarp);
                 });
-                $x('.//div[contains(concat(" ",normalize-space(@class)," "), " lvupFacility ")]/p[contains(concat(" ",normalize-space(@class)," "), " main ")]/a',self).forEach(function(a){
-                    addDoc.href = baseUrl + "/facility/" + (a.getAttribute('href').replace(baseUrl,""));
-                });
-                $e(addDoc,'click',function(e){subMenu.style.display = "none";mainMenu.style.display = "none";});
-                addDocWarp.appendChild(addDoc);
-                addWarp.appendChild(addDocWarp);
-            });
-            subMenu.setAttribute("ready","true");
-        }});
+                subMenu.setAttribute("ready","true");
+            }
+        });
     }
 };
 
