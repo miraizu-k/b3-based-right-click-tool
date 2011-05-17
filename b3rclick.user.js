@@ -10,10 +10,101 @@
 // @maintainer     romer
 // @version        1.1.0.1
 // ==/UserScript==
-var NAMESPACE = 'com.dosukoi-kissa.www';
-var crossBrowserUtility = initCrossBrowserSupport();
 
-var $ = function (id,pd) {return pd ? pd.getElementById(id) : document.getElementById(id);};
+/**
+ * gettextっぽい感じのやつ
+ * @param {String} message
+ * @param {Object} messageObject
+ * @function
+ */
+var _ = function () {
+    var locale = navigator.language.toLowerCase().substr(0,2),
+    domain = location.hostname.replace(/^[^.]+\./,'').toLowerCase(),
+    
+    checks = [
+              {'default' : '_ja','locale' : locale},
+              {'default' : '_3gokushi.jp','locale' : domain},
+             ];
+    return function (message,messageObject) {
+        var messages,defKey;
+        checks.forEach(function (check) {
+            var key = '_'+check.locale;
+            if (messageObject.hasOwnProperty(key)) {
+                messages = messageObject[key];
+                defKey = check['default'];
+            }
+        });
+        return messages[message] ? messages[message] : messageObject[defKey][message];
+    };
+}(),
+NAMESPACE = 'com.dosukoi-kissa.www',
+crossBrowserUtility = initCrossBrowserSupport(),
+systemMessages = {
+        '_3gokushi.jp' : {
+            'LordName' : '\u541b\u4e3b\u540d',
+            'Flatland' : '\u5e73\u5730'
+        },
+        '_1kibaku.jp' : {
+            'LordName' : '\u982d\u9996\u540d',
+            'Flatland' : '\u5e73\u5730'
+        },
+        '_landsandlegends.com' : {
+            'LordName' : 'Lord',
+            'Flatland' : 'Flatland'
+        },
+        '_17pk.com.tw' : {
+            'LordName' : '\u541b\u4e3b\u540d',
+            'Flatland' : '\u5e73\u5730'
+        }
+},
+
+localeMessages = {
+    '_ja' : {
+        'Infomation' : '\u60c5\u5831',
+        'Deploy' : '\u51fa\u5175',
+        'CenterMap' : '\u4e2d\u592e\u306b\u8868\u793a\u3059\u308b',
+        'ConvertTerritory' : '\u3053\u306e\u9818\u5730\u3092\u62e0\u70b9\u306b\u3059\u308b',
+        'LvUpTerritory' : '\u3053\u306e\u9818\u5730\u3092\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7',
+        'DiscardTerritory' : '\u3053\u306e\u9818\u5730\u3092\u7834\u68c4\u3059\u308b',
+        'LvUp' : '\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7',
+        'LvUpx2' : '\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7x2',
+        'Building' : '\u5efa\u7bc9>>',
+        'CityField' : '\u90fd\u5e02\u753b\u9762',
+        'MapField' : '\u5730\u56f3\u753b\u9762',
+        'GovernorField' : '\u5185\u653f\u753b\u9762'
+    },
+    '_en' : {
+        'Infomation' : 'infomation',
+        'Deploy' : 'deploy',
+        'CenterMap' : 'Center on map',
+        'ConvertTerritory' : 'Convert this Territory',
+        'LvUpTerritory' : 'Level Up Territory',
+        'DiscardTerritory' : 'Discard Territory',
+        'LvUp' : 'Level Up',
+        'LvUpx2' : 'Level Up x2',
+        'Building' : 'Building>>',
+        'CityField' : 'City Field',
+        'MapField' : 'Map Field',
+        'GovernorField' : 'Governor Field'
+    },
+    '_zh' : {
+        'Infomation' : '\u4fe1\u606f',
+        'Deploy' : '\u51fa\u5175',
+        'CenterMap' : '\u986f\u793a\u6b64\u8655\u70ba\u4e2d\u5fc3',
+        'ConvertTerritory' : '\u5c07\u9818\u5730\u5efa\u70ba\u64da\u9ede',
+        'LvUpTerritory' : '\u9818\u5730\u7684\u5347\u7d1a',
+        'DiscardTerritory' : '\u6368\u68c4\u6b64\u9818\u5730',
+        'LvUp' : '\u4e0a\u6607\u7b49\u7d1a',
+        'LvUpx2' : '\u4e0a\u6607\u7b49\u7d1ax2',
+        'Building' : '\u5efa\u9020>>',
+        'CityField' : '\u90fd\u5e02\u753b\u9762',
+        'MapField' : '\u5730\u5716\u753b\u9762',
+        'GovernorField' : '\u5167\u653f\u753b\u9762'
+    }
+},
+
+
+$ = function (id,pd) {return pd ? pd.getElementById(id) : document.getElementById(id);},
 /**
  * $x
  * @description 以前の$a xpathを評価し結果を配列で返す
@@ -23,7 +114,7 @@ var $ = function (id,pd) {return pd ? pd.getElementById(id) : document.getElemen
  * @throws
  * @function
  */
-var $x = function(xp, dc) {function c(f) {var g = '';if (typeof f === 'string') {g = f;}var h = function(a) {var b = document.implementation.createHTMLDocument('');var c = b.createRange();c.selectNodeContents(b.documentElement);c.deleteContents();b.documentElement.appendChild(c.createContextualFragment(a));return b;};if (0 <= navigator.userAgent.toLowerCase().indexOf('firefox')) {h = function(a) {var b = document.implementation.createDocumentType('html','-//W3C//DTD HTML 4.01//EN','http://www.w3.org/TR/html4/strict.dtd');var c = document.implementation.createDocument(null, 'html', b);var d = document.createRange();d.selectNodeContents(document.documentElement);var e = c.adoptNode(d.createContextualFragment(a));c.documentElement.appendChild(e);return c;};}return h(g);}var m = [], r = null, n = null;var o = dc || document.documentElement;var p = o.ownerDocument;if (typeof dc === 'object' && typeof dc.nodeType === 'number') {if (dc.nodeType === 1 && dc.nodeName.toUpperCase() === 'HTML') {o = c(dc.innerHTML);p = o;}else if (dc.nodeType === 9) {o = dc.documentElement;p = dc;}}else if (typeof dc === 'string') {o = c(dc);p = o;}try {r = p.evaluate(xp, o, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);for ( var i = 0, l = r.snapshotLength; i < l; i++) m.push(r.snapshotItem(i));}catch (e) {try {var q = p.evaluate(xp, o, null, XPathResult.ANY_TYPE, null);while (n = q.iterateNext()) m.push(n);}catch (e) {throw new Error(e.message);}}return m;};
+$x = function(xp, dc) {function c(f) {var g = '';if (typeof f === 'string') {g = f;}var h = function(a) {var b = document.implementation.createHTMLDocument('');var c = b.createRange();c.selectNodeContents(b.documentElement);c.deleteContents();b.documentElement.appendChild(c.createContextualFragment(a));return b;};if (0 <= navigator.userAgent.toLowerCase().indexOf('firefox')) {h = function(a) {var b = document.implementation.createDocumentType('html','-//W3C//DTD HTML 4.01//EN','http://www.w3.org/TR/html4/strict.dtd');var c = document.implementation.createDocument(null, 'html', b);var d = document.createRange();d.selectNodeContents(document.documentElement);var e = c.adoptNode(d.createContextualFragment(a));c.documentElement.appendChild(e);return c;};}return h(g);}var m = [], r = null, n = null;var o = dc || document.documentElement;var p = o.ownerDocument;if (typeof dc === 'object' && typeof dc.nodeType === 'number') {if (dc.nodeType === 1 && dc.nodeName.toUpperCase() === 'HTML') {o = c(dc.innerHTML);p = o;}else if (dc.nodeType === 9) {o = dc.documentElement;p = dc;}}else if (typeof dc === 'string') {o = c(dc);p = o;}try {r = p.evaluate(xp, o, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);for ( var i = 0, l = r.snapshotLength; i < l; i++) m.push(r.snapshotItem(i));}catch (e) {try {var q = p.evaluate(xp, o, null, XPathResult.ANY_TYPE, null);while (n = q.iterateNext()) m.push(n);}catch (e) {throw new Error(e.message);}}return m;},
 
 /**
  * $s
@@ -35,7 +126,7 @@ var $x = function(xp, dc) {function c(f) {var g = '';if (typeof f === 'string') 
  * @see $x
  * @function
  */
-var $s = function(xp, dc) { return $x(xp,dc).shift();};
+$s = function(xp, dc) { return $x(xp,dc).shift();},
 
 /**
  * $e
@@ -45,11 +136,11 @@ var $s = function(xp, dc) { return $x(xp,dc).shift();};
  * @param {Boolean} [useCapture=false]
  * @function
  */
-var $e = function(doc, event, func, useCapture) {var eventList = event;var eType = null;var capture = useCapture || false;if (typeof event == 'string') {eventList = {};eventList[event] = [func];} else {for (eType in eventList) {if (typeof eventList[eType] == 'object'&& eventList[eType] instanceof Array) {continue;}eventList[eType] = [ event[eType] ];}}for (eType in eventList) {var eventName = eType;for ( var i = 0; i < eventList[eType].length; i++) {doc.addEventListener(eventName, eventList[eType][i], capture);}}};
+$e = function(doc, event, func, useCapture) {var eventList = event;var eType = null;var capture = useCapture || false;if (typeof event == 'string') {eventList = {};eventList[event] = [func];} else {for (eType in eventList) {if (typeof eventList[eType] == 'object'&& eventList[eType] instanceof Array) {continue;}eventList[eType] = [ event[eType] ];}}for (eType in eventList) {var eventName = eType;for ( var i = 0; i < eventList[eType].length; i++) {doc.addEventListener(eventName, eventList[eType][i], capture);}}},
 
 //初期設定
-var menuWarp = createElement('div');
-var mainMenu = createElement('div', {
+menuWarp = createElement('div'),
+mainMenu = createElement('div', {
     'attribute' : {
         'class' : 'rMenu'
     },
@@ -67,9 +158,10 @@ var mainMenu = createElement('div', {
         'min-width': '75px'
     },
     'innerText' : 'none'
-});
+}),
 
-var subMenu = mainMenu.cloneNode();
+subMenu = mainMenu.cloneNode();
+
 subMenu.setAttribute('ready','false');
 subMenu.innerHTML = "<ul><li>testdayo</li></ul>";
 
@@ -295,17 +387,17 @@ var mapMenu = {
         type:"text"
     },
     {
-        name:"情報",
+        name: _("Infomation",localeMessages),
         type:"link",
         href:"land.php?"
     },
     {
-        name:"出兵",
+        name:_("Deploy",localeMessages),
         type:"link",
         href:"facility/castle_send_troop.php?"
     },
     {
-        name:"この場所を中心に表示",
+        name:_("CenterMap",localeMessages),
         type:"link",
         href:"map.php?"
     },
@@ -315,7 +407,7 @@ var mapMenu = {
             if (e.target.nodeName.toUpperCase() == 'A') {
                 $x('@onmouseover',e.target).forEach(function(mouseover){
                     var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                    var text = $s('//dt[contains(text(),"君主名")]/following-sibling::dd[1]/text()',doc);
+                    var text = $s('//dt[contains(text(),"'+_('LordName', systemMessages)+'")]/following-sibling::dd[1]/text()',doc);
                     if (text && text.data == userName) {
                         isMyTerritory = true;
                     }
@@ -324,7 +416,7 @@ var mapMenu = {
             else {
                 isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
             }
-            return isMyTerritory ? "この領地を拠点にする" : null;
+            return isMyTerritory ? _("ConvertTerritory",localeMessages) : null;
         },
         type:"link",
         href:"facility/select_type.php?"
@@ -335,7 +427,7 @@ var mapMenu = {
             if (e.target.nodeName.toUpperCase() == 'A') {
                 $x('@onmouseover',e.target).forEach(function(mouseover){
                     var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                    var text = $s('//dt[contains(text(),"君主名")]/following-sibling::dd[1]/text()',doc);
+                    var text = $s('//dt[contains(text(),"'+_('LordName', systemMessages)+'")]/following-sibling::dd[1]/text()',doc);
                     if (text && text.data == userName) {
                         isMyTerritory = true;
                     }
@@ -344,7 +436,7 @@ var mapMenu = {
             else {
                 isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
             }
-            return isMyTerritory ? "この領地をレベルアップ" : null;
+            return isMyTerritory ? _("LvUpTerritory",localeMessages) : null;
         },
         type:"link",
         href:"territory_proc.php?"
@@ -355,7 +447,7 @@ var mapMenu = {
             if (e.target.nodeName.toUpperCase() == 'A') {
                 $x('@onmouseover',e.target).forEach(function(mouseover){
                     var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                    var text = $s('//dt[contains(text(),"君主名")]/following-sibling::dd[1]/text()',doc);
+                    var text = $s('//dt[contains(text(),"'+_('LordName', systemMessages)+'")]/following-sibling::dd[1]/text()',doc);
                     if (text && text.data == userName) {
                         isMyTerritory = true;
                     }
@@ -364,7 +456,7 @@ var mapMenu = {
             else {
                 isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
             }
-            return isMyTerritory ? "この領地を破棄する" : null;
+            return isMyTerritory ? _("DiscardTerritory",localeMessages) : null;
         },
         type:"link",
         href:"territory_proc.php?mode=remove&"
@@ -381,26 +473,26 @@ var villageMenu = {
         type:"text"
     },
     {
-        name:"情報",
+        name: _("Infomation",localeMessages),
         type:"link",
         href:"facility/select_facility.php?"
     },
     {
         name:function(event){
-            if (event.target.alt == "平地") {
+            if (event.target.alt == _('Flatland', systemMessages)) {
                 return null;
             }
-            return "レベルアップ";
+            return _("LvUp",localeMessages);
         },
         type:"link",
         href:"facility/build.php?"
     },
     {
         name:function(event){
-            if (event.target.alt == "平地") {
+            if (event.target.alt == _('Flatland', systemMessages)) {
                 return null;
             }
-            return "レベルアップx2";
+            return _("LvUpx2",localeMessages);
         },
         type:"link",
         href:"facility/build.php?",
@@ -423,8 +515,8 @@ var villageMenu = {
     },
     {
         name:function(event){
-            if (event.target.alt == "平地") {
-                return "建設";
+            if (event.target.alt == _('Flatland', systemMessages)) {
+                return _('Building', localeMessages);
             }
             return "";
         },
@@ -494,7 +586,7 @@ var sidebarVillageMenu = {
         type:"text"
     },
     {
-        name:"都市画面",
+        name: _("CityField",localeMessages),
         type:"link",
         href:function(event){
             var res = null;
@@ -506,7 +598,7 @@ var sidebarVillageMenu = {
         }
     },
     {
-        name:"地図画面",
+        name:_("MapField",localeMessages),
         type:"link",
         href:function(event){
             var res = null;
@@ -518,7 +610,7 @@ var sidebarVillageMenu = {
         }
     },
     {
-        name:"内政画面",
+        name:_("GovernorField",localeMessages),
         type:"link",
         href:function(event){
             var res = null;
@@ -574,12 +666,10 @@ GM_addStyle([
             );
 
 
-
-
 /**
 *
 * @param {String} text
-* @returns {Text}
+* @returns {Element}
 */
 function createText(text) {
    return document.createTextNode(text);
@@ -588,12 +678,9 @@ function createText(text) {
 /**
 * Function createElement
 *
-* @param {String}
-*            elementName
-* @param {Object}
-*            option
-* @param {HTMLDocument}
-*            doc
+* @param {String} elementName
+* @param {Object} [option]
+* @param {HTMLDocument} [doc]
 * @returns {Element}
 */
 function createElement(elementName, option, doc) {
