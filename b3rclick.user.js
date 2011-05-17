@@ -10,7 +10,7 @@
 // @maintainer     romer
 // @version        1.1.0.1
 // ==/UserScript==
-var NAMESPACE = '3gokushiRightClick';
+var NAMESPACE = 'www.dosukoi-kissa.com';
 var crossBrowserUtility = initCrossBrowserSupport();
 
 var $ = function (id,pd) {return pd ? pd.getElementById(id) : document.getElementById(id);};
@@ -66,52 +66,39 @@ var mainMenu = createElement('div', {
         'display': 'none',
         'min-width': '75px'
     },
-    'events' : {
-        'mouseover' : function(e){
-                        mainMenu.style.display = "block";
-                    },
-        'mouseout' : function(e){
-                        mainMenu.style.display = "none";
-                    }
-        }
+    'innerText' : 'none'
 });
 
-var subMenu = createElement('div', {
-    'attribute' : {
-        'class' : 'rMenu',
-        'ready' : 'false'
-    },
-    'css' : {
-        'padding': '3px',
-        'opacity': 0.8,
-        'font-size': 'small',
-        'color': '#333333',
-        'background-color': '#000000',
-        'border': '1px solid #7777FF',
-        'position': 'absolute',
-        'z-index': 10000,
-        'cursor': 'pointer',
-        'display': 'none',
-        'min-width': '75px'
-    },
-    'events' : {
-        'mouseover' : function(e){
-                            mainMenu.style.display = "block";
-                            subMenu.style.display = "block";
-                    },
-        'mouseout' : function(e){
-                            mainMenu.style.display = "none";
-                            subMenu.style.display = "none";
-                    }
-    }
-});
+var subMenu = mainMenu.cloneNode();
+subMenu.setAttribute('ready','false');
+subMenu.innerHTML = "<ul><li>testdayo</li></ul>";
 
 document.body.appendChild(menuWarp);
 
 menuWarp.appendChild(mainMenu);
 menuWarp.appendChild(subMenu);
 
-mainMenu.innerHTML = 'null';
+$e(mainMenu, {
+    'mouseover' : function(e){
+        mainMenu.style.display = "block";
+    },
+    'mouseout' : function(e){
+        mainMenu.style.display = "none";
+    }
+});
+
+$e(subMenu, {
+    'mouseover' : function(e){
+        mainMenu.style.display = "block";
+        subMenu.style.display = "block";
+    },
+    'mouseout' : function(e){
+        mainMenu.style.display = "none";
+        subMenu.style.display = "none";
+    }
+});
+
+
 subMenu.innerHTML = "<ul><li>testdayo</li></ul>";
 
 
