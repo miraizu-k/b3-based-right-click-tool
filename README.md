@@ -1,7 +1,9 @@
 ブラウザ三国志ベースのアプリケーションの右クリックを拡張するプログラムです。
+
 This script is an right-click extension, browser-3gokushi based applications
 
 英語苦手です。英語間違いだらけと思います。Google翻訳使ってます。
+
 English is not good. I think many mistakes in English.I'm using Google Translate.
 
 
