@@ -5,8 +5,15 @@ This script is an right-click extension, browser-3gokushi based applications
 English is not good. I think many mistakes in English.I'm using Google Translate.
 
 
-Support Game
-    ブラウザ 三国志 http://3gokushi.jp/
-    ブラウザ 一騎当千 http://www.1kibaku.jp/
-    facebook apps landsandlegends http://apps.facebook.com/landsandlegends/
-    facebook apps and http://qcsg.17pk.com.tw/ or http://apps.facebook.com/ftc_qcsg/
+## Support Game
+###browser 3gokushi
+* Japan : http://3gokushi.jp/
+* France : http://lordsofdynasty.com/
+* Taiwan : http://qcsg.17pk.com.tw/
+* Thailand : http://sangokushi.in.th/
+* Korean : http://sdsam.nexon.com/
+
+### Derived
+* browser ikkitousen : http://www.1kibaku.jp/
+* L&L (facebook apps lands and legends) : http://apps.facebook.com/landsandlegends/
+

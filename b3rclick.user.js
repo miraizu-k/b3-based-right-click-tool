@@ -58,7 +58,7 @@
             'DiscardTerritory' : '\u3053\u306e\u9818\u5730\u3092\u7834\u68c4\u3059\u308b',
             'LvUp' : '\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7',
             'LvUpx2' : '\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7x2',
-            'Building' : '\u5efa\u7bc9>>',
+            'Building' : '\u5efa\u7bc9\u00A0>>',
             'CityField' : '\u90fd\u5e02\u753b\u9762',
             'MapField' : '\u5730\u56f3\u753b\u9762',
             'GovernorField' : '\u5185\u653f\u753b\u9762'
@@ -74,7 +74,7 @@
             'DiscardTerritory' : 'Discard Territory',
             'LvUp' : 'Level Up',
             'LvUpx2' : 'Level Up x2',
-            'Building' : 'Building>>',
+            'Building' : 'Building\u00A0>>',
             'CityField' : 'City Field',
             'MapField' : 'Map Field',
             'GovernorField' : 'Governor Field'
@@ -90,7 +90,7 @@
             'DiscardTerritory' : '\u6368\u68c4\u6b64\u9818\u5730',
             'LvUp' : '\u4e0a\u6607\u7b49\u7d1a',
             'LvUpx2' : '\u4e0a\u6607\u7b49\u7d1ax2',
-            'Building' : '\u5efa\u9020>>',
+            'Building' : '\u5efa\u9020\u00A0>>',
             'CityField' : '\u90fd\u5e02\u753b\u9762',
             'MapField' : '\u5730\u5716\u753b\u9762',
             'GovernorField' : '\u5167\u653f\u753b\u9762'
