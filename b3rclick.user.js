@@ -6,62 +6,50 @@
 // @include        http://*.1kibaku.jp/*
 // @include        http://*.17pk.com.tw/*
 // @include        http://*.landsandlegends.com/*
+// @include        http://*.sdsam.nexon.com/*
+// @include        http://*.lordsofdynasty.com/*
+// @include        http://*.sangokushi.in.th/*
 // @author         su-zan
 // @maintainer     romer
-// @version        1.1.0.1
+// @version        1.1.2.0
 // ==/UserScript==
 (function () {
-    
-    /**
-     * gettextっぽい感じのやつ
-     * @param {String} message
-     * @param {Object} messageObject
-     * @function
-     */
-    var _ = (function () {
-        var locale = navigator.language.toLowerCase().substr(0,2),
-        domain = location.hostname.replace(/^[^.]+\./,'').toLowerCase(),
-        checks = [
-                  {'default' : '_ja','locale' : locale},
-                  {'default' : '_3gokushi.jp','locale' : domain}
-                 ];
-    
-        return function (message,messageObject) {
-            var messages,defKey;
-    
-            checks.forEach(function (check) {
-                var key = '_'+check.locale;
-                if (Object.prototype.hasOwnProperty.call(messageObject, key)) {
-                    messages = messageObject[key];
-                    defKey = check['default'];
-                }
-            });
-            return messages[message] ? messages[message] : messageObject[defKey][message];
-        };
-    })(),
-    
-    NAMESPACE = 'com.dosukoi-kissa.www',
+   var NAMESPACE = 'com.dosukoi-kissa.www',
     crossBrowserUtility = initCrossBrowserSupport(),
     systemMessages = {
-            '_3gokushi.jp' : {
-                'LordName' : '\u541b\u4e3b\u540d',
-                'Flatland' : '\u5e73\u5730'
-            },
-            '_1kibaku.jp' : {
-                'LordName' : '\u982d\u9996\u540d',
-                'Flatland' : '\u5e73\u5730'
-            },
-            '_landsandlegends.com' : {
-                'LordName' : 'Lord',
-                'Flatland' : 'Flatland'
-            },
-            '_17pk.com.tw' : {
-                'LordName' : '\u541b\u4e3b\u540d',
-                'Flatland' : '\u5e73\u5730'
-            }
+        '_3gokushi.jp' : {
+            'LordName' : '\u541b\u4e3b\u540d',
+            'Flatland' : '\u5e73\u5730'
+        },
+        '_1kibaku.jp' : {
+            'LordName' : '\u982d\u9996\u540d',
+            'Flatland' : '\u5e73\u5730'
+        },
+        '_landsandlegends.com' : {
+            'LordName' : 'Lord',
+            'Flatland' : 'Flatland'
+        },
+        '_17pk.com.tw' : {
+            'LordName' : '\u541b\u4e3b\u540d',
+            'Flatland' : '\u5e73\u5730'
+        },
+        '_sdsam.nexon.com' : {
+            'LordName' : '\uad70\uc8fc\uc774\ub984',
+            'Flatland' : '\ud3c9\uc9c0'
+        },
+        '_lordsofdynasty.com' : {
+            'LordName' : 'Seigneur',
+            'Flatland' : 'Plaines'
+        },
+        '_sangokushi.in.th' : {
+            'LordName' : '\u0e0a\u0e37\u0e48\u0e2d\u0e40\u0e08\u0e49\u0e32\u0e40\u0e21\u0e37\u0e2d\u0e07',
+            'Flatland' : '\u0e1e\u0e37\u0e49\u0e19\u0e17\u0e35\u0e48\u0e23\u0e32\u0e1a'
+        }
     },
     localeMessages = {
         '_ja' : {
+            'LordName' : '\u541b\u4e3b\u540d',
+            'Flatland' : '\u5e73\u5730',
             'Infomation' : '\u60c5\u5831',
             'Deploy' : '\u51fa\u5175',
             'CenterMap' : '\u4e2d\u592e\u306b\u8868\u793a\u3059\u308b',
@@ -76,6 +64,8 @@
             'GovernorField' : '\u5185\u653f\u753b\u9762'
         },
         '_en' : {
+            'LordName' : 'Lord',
+            'Flatland' : 'Flatland',
             'Infomation' : 'infomation',
             'Deploy' : 'deploy',
             'CenterMap' : 'Center on map',
@@ -90,6 +80,8 @@
             'GovernorField' : 'Governor Field'
         },
         '_zh' : {
+            'LordName' : '\u541b\u4e3b\u540d',
+            'Flatland' : '\u5e73\u5730',
             'Infomation' : '\u4fe1\u606f',
             'Deploy' : '\u51fa\u5175',
             'CenterMap' : '\u986f\u793a\u6b64\u8655\u70ba\u4e2d\u5fc3',
@@ -104,6 +96,44 @@
             'GovernorField' : '\u5167\u653f\u753b\u9762'
         }
     },
+    __ = (function () {
+       var LC = '_'+navigator.language.toLowerCase ().substring(0,2),
+           DOMAIN = '_'+location.hostname.toLowerCase ().replace(/^[^.]+\./i, ''),
+           DEF_LC = '_en',
+           DEF_DOMAIN = '_3gokushi.jp',
+           result = function (messagesList) {
+                      if (arguments.callee !== this.constructor) {
+                          return new arguments.callee(messagesList);
+                      }
+                      var messages = messagesList[LC] || messagesList[DEF_LC] || messagesList[DOMAIN] || messagesList[DEF_DOMAIN];
+                      this.text = function () {
+                          return function (message) {
+                              return messages[message] || message;
+                          };
+                      };
+                      this.key = function () {
+                          return function (message) {
+                              for (var messageKey in messages) {
+                                  if (messages[messageKey] === message) {
+                                      return messageKey;
+                                  }
+                              }
+                              return message;
+                          };
+                      };
+                   };
+       return function (messageList) {
+           return new result(messageList);
+       };
+   })(),
+    _l = __(localeMessages).text(),
+    _s = __(systemMessages).text(),
+    _sl = (function () {
+        var findKey = __(systemMessages).key();
+        return function (message) {
+            return _l(findKey(message));
+        };
+    })(),
     
     $ = function (id,pd) {return pd ? pd.getElementById(id) : document.getElementById(id);},
     /**
@@ -388,17 +418,17 @@
             type:"text"
         },
         {
-            name: _("Infomation",localeMessages),
+            name: _l("Infomation"),
             type:"link",
             href:"land.php?"
         },
         {
-            name:_("Deploy",localeMessages),
+            name:_l('Deploy'),
             type:"link",
             href:"facility/castle_send_troop.php?"
         },
         {
-            name:_("CenterMap",localeMessages),
+            name:_l('CenterMap'),
             type:"link",
             href:"map.php?"
         },
@@ -408,7 +438,7 @@
                 if (e.target.nodeName.toUpperCase() == 'A') {
                     $x('@onmouseover',e.target).forEach(function(mouseover){
                         var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                        var text = $s('//dt[contains(text(),"'+_('LordName', systemMessages)+'")]/following-sibling::dd[1]/text()',doc);
+                        var text = $s('//dt[contains(text(),"'+_s('LordName')+'")]/following-sibling::dd[1]/text()',doc);
                         if (text && text.data == userName) {
                             isMyTerritory = true;
                         }
@@ -417,7 +447,7 @@
                 else {
                     isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
                 }
-                return isMyTerritory ? _("ConvertTerritory",localeMessages) : null;
+                return isMyTerritory ? _l('ConvertTerritory') : null;
             },
             type:"link",
             href:"facility/select_type.php?"
@@ -428,7 +458,7 @@
                 if (e.target.nodeName.toUpperCase() == 'A') {
                     $x('@onmouseover',e.target).forEach(function(mouseover){
                         var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                        var text = $s('//dt[contains(text(),"'+_('LordName', systemMessages)+'")]/following-sibling::dd[1]/text()',doc);
+                        var text = $s('//dt[contains(text(),"'+_s('LordName')+'")]/following-sibling::dd[1]/text()',doc);
                         if (text && text.data == userName) {
                             isMyTerritory = true;
                         }
@@ -437,7 +467,7 @@
                 else {
                     isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
                 }
-                return isMyTerritory ? _("LvUpTerritory",localeMessages) : null;
+                return isMyTerritory ? _l('LvUpTerritory') : null;
             },
             type:"link",
             href:"territory_proc.php?"
@@ -448,7 +478,7 @@
                 if (e.target.nodeName.toUpperCase() == 'A') {
                     $x('@onmouseover',e.target).forEach(function(mouseover){
                         var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                        var text = $s('//dt[contains(text(),"'+_('LordName', systemMessages)+'")]/following-sibling::dd[1]/text()',doc);
+                        var text = $s('//dt[contains(text(),"'+_s('LordName')+'")]/following-sibling::dd[1]/text()',doc);
                         if (text && text.data == userName) {
                             isMyTerritory = true;
                         }
@@ -457,7 +487,7 @@
                 else {
                     isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
                 }
-                return isMyTerritory ? _("DiscardTerritory",localeMessages) : null;
+                return isMyTerritory ? _l('DiscardTerritory') : null;
             },
             type:"link",
             href:"territory_proc.php?mode=remove&"
@@ -469,31 +499,31 @@
         items:[
         {
             name:function(event){
-                return "<b>" + event.target.alt + "</b>";
+                return "<b>" + _sl(event.target.alt) + "</b>";
             },
             type:"text"
         },
         {
-            name: _("Infomation",localeMessages),
+            name: _l('Infomation'),
             type:"link",
             href:"facility/select_facility.php?"
         },
         {
             name:function(event){
-                if (event.target.alt == _('Flatland', systemMessages)) {
+                if (event.target.alt == _s('Flatland')) {
                     return null;
                 }
-                return _("LvUp",localeMessages);
+                return _l('LvUp');
             },
             type:"link",
             href:"facility/build.php?"
         },
         {
             name:function(event){
-                if (event.target.alt == _('Flatland', systemMessages)) {
+                if (event.target.alt == _s('Flatland')) {
                     return null;
                 }
-                return _("LvUpx2",localeMessages);
+                return _l('LvUpx2');
             },
             type:"link",
             href:"facility/build.php?",
@@ -516,8 +546,8 @@
         },
         {
             name:function(event){
-                if (event.target.alt == _('Flatland', systemMessages)) {
-                    return _('Building', localeMessages);
+                if (event.target.alt == _s('Flatland')) {
+                    return _l('Building');
                 }
                 return "";
             },
@@ -563,7 +593,7 @@
                         var addDocWarp = document.createElement("LI");
                         var addDoc = document.createElement("A");
                         $x('.//th[contains(concat(" ",normalize-space(@class)," "), " mainTtl ")]',self).forEach(function(th){
-                            addDoc.innerHTML = th.innerHTML;
+                            addDoc.innerHTML = _sl(th.innerHTML);
                         });
                         $x('.//div[contains(concat(" ",normalize-space(@class)," "), " lvupFacility ")]/p[contains(concat(" ",normalize-space(@class)," "), " main ")]/a',self).forEach(function(a){
                             addDoc.href = baseUrl + "/facility/" + (a.getAttribute('href').replace(baseUrl,""));
@@ -587,7 +617,7 @@
             type:"text"
         },
         {
-            name: _("CityField",localeMessages),
+            name: _l('CityField'),
             type:"link",
             href:function(event){
                 var res = null;
@@ -599,7 +629,7 @@
             }
         },
         {
-            name:_("MapField",localeMessages),
+            name:_l('MapField'),
             type:"link",
             href:function(event){
                 var res = null;
@@ -611,7 +641,7 @@
             }
         },
         {
-            name:_("GovernorField",localeMessages),
+            name:_l('GovernorField'),
             type:"link",
             href:function(event){
                 var res = null;
