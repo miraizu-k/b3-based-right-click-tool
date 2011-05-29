@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           b3rClick
-// @namespace      com.dosukoi-kissa.www
+// @namespace      b3rClick
 // @description    ブラウザ三国志ベースのアプリケーションの右クリックを拡張するプログラムです。 This script is an right-click extension, browser-3gokushi based applications 
 // @include        http://*.3gokushi.jp/*
 // @include        http://*.1kibaku.jp/*
@@ -11,10 +11,10 @@
 // @include        http://*.sangokushi.in.th/*
 // @author         su-zan
 // @maintainer     romer
-// @version        1.1.2.0
+// @version        1.1.3.2
 // ==/UserScript==
 (function () {
-   var NAMESPACE = 'com.dosukoi-kissa.www',
+   var NAMESPACE = 'b3rClick',
     crossBrowserUtility = initCrossBrowserSupport(),
     systemMessages = {
         '_3gokushi.jp' : {
@@ -53,7 +53,8 @@
             'Infomation' : '\u60c5\u5831',
             'Deploy' : '\u51fa\u5175',
             'CenterMap' : '\u4e2d\u592e\u306b\u8868\u793a\u3059\u308b',
-            'ConvertTerritory' : '\u3053\u306e\u9818\u5730\u3092\u62e0\u70b9\u306b\u3059\u308b',
+            'ConvertToVillage' : '\u3053\u306e\u9818\u5730\u3092\u6751\u306b\u3059\u308b',
+            'ConvertToFort' : '\u3053\u306e\u9818\u5730\u3092\u7826\u306b\u3059\u308b',
             'LvUpTerritory' : '\u3053\u306e\u9818\u5730\u3092\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7',
             'DiscardTerritory' : '\u3053\u306e\u9818\u5730\u3092\u7834\u68c4\u3059\u308b',
             'LvUp' : '\u30ec\u30d9\u30eb\u30a2\u30c3\u30d7',
@@ -69,7 +70,8 @@
             'Infomation' : 'infomation',
             'Deploy' : 'deploy',
             'CenterMap' : 'Center on map',
-            'ConvertTerritory' : 'Convert this Territory',
+            'ConvertToVillage' : 'Convert To Village',
+            'ConvertToFort' : 'Convert To Fort',
             'LvUpTerritory' : 'Level Up Territory',
             'DiscardTerritory' : 'Discard Territory',
             'LvUp' : 'Level Up',
@@ -85,7 +87,8 @@
             'Infomation' : '\u4fe1\u606f',
             'Deploy' : '\u51fa\u5175',
             'CenterMap' : '\u986f\u793a\u6b64\u8655\u70ba\u4e2d\u5fc3',
-            'ConvertTerritory' : '\u5c07\u9818\u5730\u5efa\u70ba\u64da\u9ede',
+            'ConvertToVillage' : '\u8f49\u63db\u00A0\u6751\u838a',
+            'ConvertToFort' : '\u8f49\u63db\u00A0\u57ce\u5be8',
             'LvUpTerritory' : '\u9818\u5730\u7684\u5347\u7d1a',
             'DiscardTerritory' : '\u6368\u68c4\u6b64\u9818\u5730',
             'LvUp' : '\u4e0a\u6607\u7b49\u7d1a',
@@ -145,7 +148,7 @@
      * @throws
      * @function
      */
-    $x = function(xp, dc) {function c(f) {var g = '';if (typeof f === 'string') {g = f;}var h = function(a) {var b = document.implementation.createHTMLDocument('');var c = b.createRange();c.selectNodeContents(b.documentElement);c.deleteContents();b.documentElement.appendChild(c.createContextualFragment(a));return b;};if (0 <= navigator.userAgent.toLowerCase().indexOf('firefox')) {h = function(a) {var b = document.implementation.createDocumentType('html','-//W3C//DTD HTML 4.01//EN','http://www.w3.org/TR/html4/strict.dtd');var c = document.implementation.createDocument(null, 'html', b);var d = document.createRange();d.selectNodeContents(document.documentElement);var e = c.adoptNode(d.createContextualFragment(a));c.documentElement.appendChild(e);return c;};}return h(g);}var m = [], r = null, n = null;var o = dc || document.documentElement;var p = o.ownerDocument;if (typeof dc === 'object' && typeof dc.nodeType === 'number') {if (dc.nodeType === 1 && dc.nodeName.toUpperCase() === 'HTML') {o = c(dc.innerHTML);p = o;}else if (dc.nodeType === 9) {o = dc.documentElement;p = dc;}}else if (typeof dc === 'string') {o = c(dc);p = o;}try {r = p.evaluate(xp, o, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);for ( var i = 0, l = r.snapshotLength; i < l; i++) m.push(r.snapshotItem(i));}catch (e) {try {var q = p.evaluate(xp, o, null, XPathResult.ANY_TYPE, null);while (n = q.iterateNext()) m.push(n);}catch (e) {throw new Error(e.message);}}return m;},
+    $x = function (xp, dc) {function c (f) {var g = '';if (typeof f == 'string') {g = f;}var h = function (a) {var b = document.implementation.createHTMLDocument('');var c = b.createRange();c.selectNodeContents(b.documentElement);c.deleteContents();b.documentElement.appendChild(c.createContextualFragment(a));return b;};if (0 <= navigator.userAgent.toLowerCase().indexOf('firefox')) {h = function (a) {var b = document.implementation.createDocumentType('html', '-//W3C//DTD HTML 4.01//EN', 'http://www.w3.org/TR/html4/strict.dtd');var c = document.implementation.createDocument(null, 'html', b);var d = document.createRange();d.selectNodeContents(document.documentElement);var e = c.adoptNode(d.createContextualFragment(a));c.documentElement.appendChild(e);return c;};}return h(g);}var m = [], r = null, n = null;var o = dc || document.documentElement;var p = o.ownerDocument;if (typeof dc == 'object' && typeof dc.nodeType == 'number') {if (dc.nodeType == 1 && dc.nodeName.toUpperCase() == 'HTML') {o = c(dc.innerHTML);p = o;}else if (dc.nodeType == 9) {o = dc.documentElement;p = dc;}}else if (typeof dc == 'string') {o = c(dc);p = o;}try {r = p.evaluate(xp, o, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);for ( var i = 0, l = r.snapshotLength; i < l; i++)m.push(r.snapshotItem(i));}catch (e) {try {var q = p.evaluate(xp, o, null, XPathResult.ANY_TYPE, null);switch (q.resultType) {case XPathResult.NUMBER_TYPE:m.push(Number(q.numberValue));break;case XPathResult.STRING_TYPE:m.push(String(q.stringValue));break;case XPathResult.BOOLEAN_TYPE:m.push(Boolean(q.booleanValue));break;case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:while (n = q.iterateNext()) {m.push(n);}break;}}catch (e) {throw new Error(e.message);}}return m;},
     
     /**
      * $s
@@ -194,7 +197,7 @@
     subMenu = mainMenu.cloneNode(false);
     
     subMenu.setAttribute('ready','false');
-    subMenu.innerHTML = "<ul><li>testdayo</li></ul>";
+    subMenu.innerHTML = '<ul><li>testdayo</li></ul>';
     
     document.body.appendChild(menuWarp);
     
@@ -203,55 +206,50 @@
     
     $e(mainMenu, {
         'mouseover' : function(e){
-            mainMenu.style.display = "block";
+            mainMenu.style.display = 'block';
         },
         'mouseout' : function(e){
-            mainMenu.style.display = "none";
+            mainMenu.style.display = 'none';
         }
     });
     
     $e(subMenu, {
         'mouseover' : function(e){
-            mainMenu.style.display = "block";
-            subMenu.style.display = "block";
+            mainMenu.style.display = 'block';
+            subMenu.style.display = 'block';
         },
         'mouseout' : function(e){
-            mainMenu.style.display = "none";
-            subMenu.style.display = "none";
+            mainMenu.style.display = 'none';
+            subMenu.style.display = 'none';
         }
     });
     
     
-    subMenu.innerHTML = "<ul><li>testdayo</li></ul>";
+    subMenu.innerHTML = '<ul><li>testdayo</li></ul>';
     
     
-    var userName = GM_getValue(NAMESPACE+"userName",null);
-    var preCheckTime = GM_getValue(NAMESPACE+"preCheckTime_UserName", null);
-    var now = new Date();
-    if (!preCheckTime) {
-        preCheckTime = now;
-    }
-    else {
-        preCheckTime = new Date(preCheckTime);
-    }
-    
-    if (userName == null || (preCheckTime.getTime() + 24*60*60*1000) <= now.getTime()) {
-        var interval = 0;
+    var nowTime = +new Date(),
+        userNameKey = NAMESPACE+'/'+location.hostname+'/UserName',
+        userName = GM_getValue(userNameKey,null),
+        preCheckTimeKey = NAMESPACE+'/'+location.hostname+'/UserName_PreCheckTime',
+        preCheckTime = GM_getValue(preCheckTimeKey,nowTime);
+
+    if (userName === null || (preCheckTime + 24*60*60*1000) <= nowTime) {
         var getUserName = function(){
             GM_xmlhttpRequest({
-                url:location.protocol + "//" + location.host+"/user/"+location.search,
+                url:location.protocol + '//' + location.host+'/user/'+location.search,
                 method : 'GET',
                 onload : function(res){
-                    var dom = document.createElement("html");
+                    var dom = document.createElement('html');
                     dom.innerHTML = res.responseText;
                     var ret = $x('//table[contains(concat(" ",normalize-space(@class)," "), " commonTables ")]//tr[2]/td[2]',dom);
                     ret.forEach(function(self){
                         userName = self.innerHTML;
-                        GM_setValue(NAMESPACE+"userName",userName);
-                        GM_setValue(NAMESPACE+"preCheckTime_UserName",new Date().getTime());
+                        GM_setValue(userNameKey,userName);
+                        GM_setValue(preCheckTimeKey,+new Date());
                     });
-                    if (userName) {
-                        clearInterval(interval);
+                    if (userName === null || userName.length === 0) {
+                        setTimeout(getUserName,100);
                     }
                 }
             });
@@ -285,8 +283,6 @@
         setListener:function(){
             var callee = this;
     
-    
-    
             var mFunc = function(event){
                 var resultMenu = callee.evaluate.apply(callee,arguments);
                 if(resultMenu != false && event.button == '2'){
@@ -294,43 +290,43 @@
                         resultMenu.ready(event);
                     }
     
-                    var addWarp = document.createElement("UL");
+                    var addWarp = document.createElement('UL');
                     for(var n=0;n < resultMenu.items.length;n++){
                         var addDoc = null;
                         var item = resultMenu.items[n];
-                        var name = callee.getValue(item,"name",arguments);
+                        var name = callee.getValue(item,'name',arguments);
                         if (!name) {
                             continue;;
                         }
                         switch(item.type){
                             case 'link':
                                 var match = null;
-                                var href = callee.getValue(item,"href",arguments);
-                                addDoc = document.createElement("A");
+                                var href = callee.getValue(item,'href',arguments);
+                                addDoc = document.createElement('A');
                                 if (0 < href.length) {
-                                    if (href.lastIndexOf("&") == (href.length - 1)) {
+                                    if (href.lastIndexOf('&') == (href.length - 1)) {
                                         href = href.slice(0,-1);
                                     }
                                     if ((match = event.target.href.match(/[\?|&](([x|y]|SSID)=[\w,-]+)/ig)) != null) {
-                                        if (href.lastIndexOf("?") != (href.length - 1)) {
-                                            href += "&";
+                                        if (href.lastIndexOf('?') != (href.length - 1)) {
+                                            href += '&';
                                         }
-                                        href += match.join("").replace("?","");
+                                        href += match.join('').replace('?','');
                                     }
-                                    $e(addDoc,"click",function() {
-                                        subMenu.style.display = "none";
-                                        mainMenu.style.display = "none";
+                                    $e(addDoc,'click',function() {
+                                        subMenu.style.display = 'none';
+                                        mainMenu.style.display = 'none';
                                     });
                                 }
                                 else {
-                                    href = "javascript:void(0);";
+                                    href = 'javascript:void(0);';
                                 }
     
                                 addDoc.href = href;
                                 addDoc.appendChild(document.createTextNode(name));
                                 break;
                             case 'text':
-                                addDoc = document.createElement("SPAN");
+                                addDoc = document.createElement('SPAN');
                                 addDoc.innerHTML = name;
                                 break;
                         }
@@ -339,7 +335,7 @@
                             $e(addDoc,item.events);
                         }
     
-                        var li = document.createElement("LI");
+                        var li = document.createElement('LI');
                         li.appendChild(addDoc);
                         addWarp.appendChild(li);
     
@@ -355,7 +351,7 @@
                     var bodyWidth = parseFloat(document.defaultView.getComputedStyle(mainMenu.parentNode, '').width);
     
                     if (bodyWidth < (event.pageX + warpWidth + 10)) {
-                        mainMenu.style.left = (bodyWidth - warpWidth - 15) + "px";
+                        mainMenu.style.left = (bodyWidth - warpWidth - 15) + 'px';
                     }
     
                 } else {
@@ -365,9 +361,12 @@
                 event.preventDefault();
                 return false;
             };
-    
-    
-            ['(id("mapOverlayMap") | id("map51-content")//div)/*[contains("aAareaAREA",name(.))][@href]','//div[contains(concat(" ",normalize-space(@class)," "), " sideBoxInner ") and contains(concat(" ",normalize-space(@class)," "), " basename ")]//li/a','id("lodgment")/div[contains(concat(" ",normalize-space(@class)," "), " floatInner ")]//li/a[not(contains(concat(" ",normalize-space(@class)," "), " map-basing "))]'].forEach(function(xpath){
+
+            [
+                '(id("mapOverlayMap") | id("map51-content")//div)/*[contains("aAareaAREA",name(.))][@href]',
+                '//div[contains(concat(" ",normalize-space(@class)," "), " sideBoxInner ") and contains(concat(" ",normalize-space(@class)," "), " basename ")]//li/a',
+                'id("lodgment")/div[contains(concat(" ",normalize-space(@class)," "), " floatInner ")]//li/a[not(contains(concat(" ",normalize-space(@class)," "), " map-basing "))]'
+            ].forEach(function(xpath){
                 $x(xpath).forEach(function(self){
                     $e(self,'contextmenu',mFunc);
                  });
@@ -376,7 +375,7 @@
         evaluate : function (event) {
             for (var n=0;n<this.ruleList.length;n++) {
                 if (this.ruleList[n].type != 'cond') {
-                    if (eval("event.target." + this.ruleList[n].type) == this.ruleList[n].value) {
+                    if (event.target[this.ruleList[n].type] == this.ruleList[n].value) {
                         return this.menu[this.ruleList[n].menu];
                     }
                 } else {
@@ -389,12 +388,12 @@
         },
         getValue : function(item,prop,orgArguments) {
             switch (typeof item[prop]) {
-                case "function":
+                case 'function':
                     return item[prop].apply(item,orgArguments);
-                case "string":
+                case 'string':
                     return item[prop];
             }
-            return "";
+            return '';
         }
     };
     
@@ -413,100 +412,115 @@
                 else {
                     name += e.target.alt;
                 }
-                return name + "</b>";
+                return name + '</b>';
             },
-            type:"text"
+            type:'text'
         },
         {
-            name: _l("Infomation"),
-            type:"link",
-            href:"land.php?"
+            name: _l('Infomation'),
+            type:'link',
+            href:'land.php?'
         },
         {
             name:_l('Deploy'),
-            type:"link",
-            href:"facility/castle_send_troop.php?"
+            type:'link',
+            href:'facility/castle_send_troop.php?'
         },
         {
             name:_l('CenterMap'),
-            type:"link",
-            href:"map.php?"
+            type:'link',
+            href:'map.php?'
         },
         {
             name: function(e){
-                var isMyTerritory = false;
-                if (e.target.nodeName.toUpperCase() == 'A') {
-                    $x('@onmouseover',e.target).forEach(function(mouseover){
-                        var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                        var text = $s('//dt[contains(text(),"'+_s('LordName')+'")]/following-sibling::dd[1]/text()',doc);
-                        if (text && text.data == userName) {
-                            isMyTerritory = true;
-                        }
-                    });
-                }
-                else {
-                    isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
-                }
-                return isMyTerritory ? _l('ConvertTerritory') : null;
+                return mapMenu.canCreateFacility(e) ? _l('ConvertToVillage') : null;
             },
-            type:"link",
-            href:"facility/select_type.php?"
+            type:'link',
+            href:'facility/select_type.php?mode=build&type=220'
         },
         {
             name: function(e){
-                var isMyTerritory = false;
-                if (e.target.nodeName.toUpperCase() == 'A') {
-                    $x('@onmouseover',e.target).forEach(function(mouseover){
-                        var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
-                        var text = $s('//dt[contains(text(),"'+_s('LordName')+'")]/following-sibling::dd[1]/text()',doc);
-                        if (text && text.data == userName) {
-                            isMyTerritory = true;
-                        }
-                    });
-                }
-                else {
-                    isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
-                }
-                return isMyTerritory ? _l('LvUpTerritory') : null;
+                return mapMenu.canCreateFacility(e) ? _l('ConvertToFort') : null;
             },
-            type:"link",
-            href:"territory_proc.php?"
+            type:'link',
+            href:'facility/select_type.php?mode=build&type=222'
+        },
+        {
+            name: function(e){
+                return mapMenu.isMyTerritory(e) ? _l('LvUpTerritory') : null;
+            },
+            type:'link',
+            href:'territory_proc.php?mode=lvup'
         },
         {
             name:function(e){
-                var isMyTerritory = false;
+                return mapMenu.isMyTerritory(e) ? _l('DiscardTerritory') : null;
+            },
+            type:'link',
+            href:'territory_proc.php?mode=remove'
+        }
+        ],
+        canCreateFacility : (function () {
+            var oldEvent = null,
+                status = false,
+                _canCreateFacility = (function () {
+                                    var facilityCount = $x('count(id("lodgment")/div[contains(concat(" ",normalize-space(@class)," "), " floatInner ")]//li)')[0],
+                                        maxFame = +$x('id("status_left")//img[contains(@src,"ico_fame")]/following-sibling::text()[1]')[0].nodeValue.match(/\d+\s*\/\s*(\d+)/)[1],
+                                        canCreate = false;
+                                    [0,17, 35, 54, 80, 112, 150, 195, 248, 310].forEach(function (fame,index) {
+                                        if (fame <= maxFame && facilityCount <= index) {
+                                            canCreate = true;
+                                        }
+                                    });
+                                    return canCreate;
+                                })();
+            return function (e) {
+                if (e === oldEvent) {
+                    return status;
+                }
+                oldEvent = e,status = false;
+                if (mapMenu.isMyTerritory(e) === true && _canCreateFacility === true) {
+                    status = true;
+                }
+                return status;
+            };
+        })(),
+        isMyTerritory : (function () {
+            var oldEvent = null,status = false;
+            return function (e) {
+                if (e === oldEvent) {
+                    return status;
+                }
+                oldEvent = e,status = false;
                 if (e.target.nodeName.toUpperCase() == 'A') {
                     $x('@onmouseover',e.target).forEach(function(mouseover){
                         var doc = mouseover.value.replace(/^[^']+'|'[^']+$/g,'');
                         var text = $s('//dt[contains(text(),"'+_s('LordName')+'")]/following-sibling::dd[1]/text()',doc);
                         if (text && text.data == userName) {
-                            isMyTerritory = true;
+                            status = true;
                         }
                     });
                 }
                 else {
-                    isMyTerritory = new RegExp("'[^']+'[^']+'"+userName+"'","i").test(e.target.getAttribute("onmouseover"));
+                    status = new RegExp("'[^']+'[^']+'"+userName+"'",'i').test(e.target.getAttribute('onmouseover'));
                 }
-                return isMyTerritory ? _l('DiscardTerritory') : null;
-            },
-            type:"link",
-            href:"territory_proc.php?mode=remove&"
-        }
-        ]
+                return status;
+            };
+        })()
     };
     
     var villageMenu = {
         items:[
         {
             name:function(event){
-                return "<b>" + _sl(event.target.alt) + "</b>";
+                return '<b>' + _sl(event.target.alt) + '</b>';
             },
-            type:"text"
+            type:'text'
         },
         {
             name: _l('Infomation'),
-            type:"link",
-            href:"facility/select_facility.php?"
+            type:'link',
+            href:'facility/select_facility.php?'
         },
         {
             name:function(event){
@@ -515,8 +529,8 @@
                 }
                 return _l('LvUp');
             },
-            type:"link",
-            href:"facility/build.php?"
+            type:'link',
+            href:'facility/build.php?'
         },
         {
             name:function(event){
@@ -525,12 +539,12 @@
                 }
                 return _l('LvUpx2');
             },
-            type:"link",
-            href:"facility/build.php?",
+            type:'link',
+            href:'facility/build.php?',
             events : {
                 click : function (event) {
-                    subMenu.style.display = "none";
-                    mainMenu.style.display = "none"
+                    subMenu.style.display = 'none';
+                    mainMenu.style.display = 'none';
                     GM_xmlhttpRequest({url:event.target.href, method : 'GET'});
                     GM_xmlhttpRequest({
                         url:event.target.href,
@@ -549,14 +563,14 @@
                 if (event.target.alt == _s('Flatland')) {
                     return _l('Building');
                 }
-                return "";
+                return '';
             },
-            type:"link",
-            href:"",
+            type:'link',
+            href:'',
             events : {
                 mouseover : function(event) {
                     var enabled = function() {
-                        if (subMenu.getAttribute("ready") == "false") {
+                        if (subMenu.getAttribute('ready') == 'false') {
                             setTimeout(enabled,200);
                             return;
                         };
@@ -578,31 +592,31 @@
         }
         ],
         ready : function(event) {
-            var baseUrl = location.protocol + "//"+location.hostname+"/";
-            subMenu.setAttribute("ready","false");
+            var baseUrl = location.protocol + '//'+location.hostname+'/';
+            subMenu.setAttribute('ready','false');
             GM_xmlhttpRequest({
                 url:event.target.href,
                 method : 'GET',
                 onload:function(respons){
-                    subMenu.innerHTML = "";
-                    var addWarp = document.createElement("UL");
+                    subMenu.innerHTML = '';
+                    var addWarp = document.createElement('UL');
                     subMenu.appendChild(addWarp);
-                    var dom = document.createElement("html");
+                    var dom = document.createElement('html');
                     dom.innerHTML = respons.responseText;
                     $x('//table[@summary="object"]',dom).forEach(function(self){
-                        var addDocWarp = document.createElement("LI");
-                        var addDoc = document.createElement("A");
+                        var addDocWarp = document.createElement('LI');
+                        var addDoc = document.createElement('A');
                         $x('.//th[contains(concat(" ",normalize-space(@class)," "), " mainTtl ")]',self).forEach(function(th){
                             addDoc.innerHTML = _sl(th.innerHTML);
                         });
                         $x('.//div[contains(concat(" ",normalize-space(@class)," "), " lvupFacility ")]/p[contains(concat(" ",normalize-space(@class)," "), " main ")]/a',self).forEach(function(a){
-                            addDoc.href = baseUrl + "/facility/" + (a.getAttribute('href').replace(baseUrl,""));
+                            addDoc.href = baseUrl + '/facility/' + (a.getAttribute('href').replace(baseUrl,''));
                         });
-                        $e(addDoc,'click',function(e){subMenu.style.display = "none";mainMenu.style.display = "none";});
+                        $e(addDoc,'click',function(e){subMenu.style.display = 'none';mainMenu.style.display = 'none';});
                         addDocWarp.appendChild(addDoc);
                         addWarp.appendChild(addDocWarp);
                     });
-                    subMenu.setAttribute("ready","true");
+                    subMenu.setAttribute('ready','true');
                 }
             });
         }
@@ -612,44 +626,44 @@
         items:[
         {
             name:function(event){
-                return "<b>" + event.target.title + "</b>";
+                return '<b>' + event.target.title + '</b>';
             },
-            type:"text"
+            type:'text'
         },
         {
             name: _l('CityField'),
-            type:"link",
+            type:'link',
             href:function(event){
                 var res = null;
-                var query = "";
+                var query = '';
                 if((res = event.target.href.match(/village_id=([^&]*)/i)) != null){
                     query = res[1];
                 }
-                return "http://" + location.host + "/village_change.php?page=%2Fvillage.php&village_id=" + query;
+                return '/village_change.php?page=%2Fvillage.php&village_id=' + query;
             }
         },
         {
             name:_l('MapField'),
-            type:"link",
+            type:'link',
             href:function(event){
                 var res = null;
-                var query = "";
+                var query = '';
                 if((res = event.target.href.match(/village_id=([^&]*)/i)) != null){
                     query = res[1];
                 }
-                return "http://" + location.host + "/village_change.php?page=%2Fmap.php&village_id=" + query;
+                return '/village_change.php?page=%2Fmap.php&village_id=' + query;
             }
         },
         {
             name:_l('GovernorField'),
-            type:"link",
+            type:'link',
             href:function(event){
                 var res = null;
-                var query = "";
+                var query = '';
                 if((res = event.target.href.match(/village_id=([^&]*)/i)) != null){
                     query = res[1];
                 }
-                return "http://" + location.host + "/village_change.php?page=%2Fcard%2Fdomestic_setting.php&village_id=" + query + "&";
+                return '/village_change.php?page=%2Fcard%2Fdomestic_setting.php&village_id=' + query;
             }
         }
         ]
@@ -662,8 +676,8 @@
     rMenu.setListener();
     
     rMenu.addMenu('sidebarVillageMenu');
-    rMenu.addRule("cond",function(event){
-        if(event.target.href != "undefined" && event.target.href.match(/village_change.php/i)){
+    rMenu.addRule('cond',function(event){
+        if(event.target.href != 'undefined' && event.target.href.match(/village_change.php/i)){
             return true;
         }
     },'sidebarVillageMenu');
@@ -685,15 +699,15 @@
     
     
     GM_addStyle([
-                    ".rMenu li b{ color:#FFAAAA;list-style :none outside none;white-space: nowrap;}",
-                    ".rMenu li{ color:#FFFFFF;list-style :none outside none;white-space: nowrap;}",
-                    ".rMenu a:link{text-decoration:none;padding-right:2px;padding-left:1px}",
-                    ".rMenu a:visited {text-decoration:none;padding-right:2px;padding-left:1px}",
-                    ".rMenu a:hover {background-color:#DDDDDD;color:#333333;text-decoration:none;}",
-                    ".rMenu a:active {background-color:#DDDDDD;color:#333333;text-decoration:none;}",
-                    ".rMenu a {display: block;width: 98%;margin-right: 1px;}",
-                    "#headerArea{ display:none; }",
-                    ].join("\n")
+                    '.rMenu li b{ color:#FFAAAA;list-style :none outside none;white-space: nowrap;}',
+                    '.rMenu li{ color:#FFFFFF;list-style :none outside none;white-space: nowrap;}',
+                    '.rMenu a:link{text-decoration:none;padding-right:2px;padding-left:1px}',
+                    '.rMenu a:visited {text-decoration:none;padding-right:2px;padding-left:1px}',
+                    '.rMenu a:hover {background-color:#DDDDDD;color:#333333;text-decoration:none;}',
+                    '.rMenu a:active {background-color:#DDDDDD;color:#333333;text-decoration:none;}',
+                    '.rMenu a {display: block;width: 98%;margin-right: 1px;}',
+                    '#headerArea{ display:none; }',
+                    ].join('\n')
                 );
     
     
@@ -1326,7 +1340,7 @@
      * @returns {Object}
      */
     function initCrossBrowserSupport() {
-        var crossBrowserUtility = {'JSON':null}
+        var crossBrowserUtility = {'JSON':null};
         // 配列のindexOf対策 from MDC
         if (!Array.prototype.indexOf) {
             Array.prototype.indexOf = function(elt /*, from*/) {
