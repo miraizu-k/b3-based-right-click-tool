@@ -11,7 +11,7 @@
 // @include        http://*.sangokushi.in.th/*
 // @author         su-zan
 // @maintainer     romer
-// @version        1.1.3.2
+// @version        1.1.3.3
 // ==/UserScript==
 (function () {
    var NAMESPACE = 'b3rClick',
@@ -763,23 +763,22 @@
      * @description GM関数初期化
      */
     function initGMFunctions() {
-        var hasGM = (function() {
+        var hasGM = (function () {
             var result = {},
                 notSupportReg = /not\s*support/i,
-                existsAPI = function(func) {
-                    return typeof func === 'function' &&
-                                    ( Object.prototype.hasOwnProperty.call(func, '__proto__') === false ||
-                                            notSupportReg.test(String(func)) === false );
+                existsAPI = function (func) {
+                    return typeof func === 'function' && (Object.prototype.hasOwnProperty.call(func, 'prototype') === false || notSupportReg.test(String(func)) === false);
                 };
+            
             [
-                    'GM_getValue', 'GM_setValue', 'GM_listValues', 'GM_deleteValue', 'GM_addStyle',
-                    'GM_log', 'GM_xmlhttpRequest', 'GM_openInTab',
-                    'GM_getResourceURL', 'GM_getResourceText', 'GM_registerMenuCommand'
-            ].forEach(function(methodName) {
-                var resName = methodName.substr(3);
+                    'GM_getValue', 'GM_setValue', 'GM_listValues', 'GM_deleteValue',
+                    'GM_addStyle', 'GM_log', 'GM_xmlhttpRequest', 'GM_openInTab', 'GM_getResourceURL',
+                    'GM_getResourceText', 'GM_registerMenuCommand'
+            ].forEach(function (methodName) {
+                var resName = methodName.substr(3),that = Function('return this')();
                 result[resName] = false;
-                
-                if (Object.prototype.hasOwnProperty.call(this, methodName) && existsAPI(this[methodName])) {
+                // window != Greasemonkey window
+                if (Object.prototype.hasOwnProperty.call(that, methodName) && existsAPI(that[methodName])) {
                     result[resName] = true;
                 }
             });
